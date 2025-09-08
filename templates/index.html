@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat AI App</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="chat-container">
+    <header class="chat-header">
+      <h2>⚡ Web3 AI Assistant</h2>
+      <button id="newChatBtn">New Chat</button>
+    </header>
+
+    <main id="chatWindow" class="chat-window">
+      <!-- Messages appear here -->
+    </main>
+
+    <footer class="chat-footer">
+      <input type="text" id="userInput" placeholder="Type a message..." autocomplete="off">
+      <button id="sendBtn">➤</button>
+    </footer>
+  </div>
+
+  <script>
+    const chatWindow = document.getElementById("chatWindow");
+    const userInput = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const newChatBtn = document.getElementById("newChatBtn");
+
+    function appendMessage(sender, text) {
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message", sender);
+      msgDiv.innerHTML = `<p>${text}</p>`;
+      chatWindow.appendChild(msgDiv);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const message = userInput.value.trim();
+      if (!message) return;
+
+      appendMessage("user", message);
+      userInput.value = "";
+
+      try {
+        const response = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message })
+        });
+
+        const data = await response.json();
+        if (data.status === "success") {
+          appendMessage("ai", data.response);
+        } else {
+          appendMessage("ai", "⚠️ Error: " + data.error);
+        }
+      } catch (err) {
+        appendMessage("ai", "⚠️ Failed to connect to server.");
+      }
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+    userInput.addEventListener("keypress", e => {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    newChatBtn.addEventListener("click", async () => {
+      await fetch("/new_chat", { method: "POST" });
+      chatWindow.innerHTML = "";
+      appendMessage("ai", "✨ New chat started.");
+    });
+  </script>
+</body>
+</html>
