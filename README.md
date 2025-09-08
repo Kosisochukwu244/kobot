@@ -1,6 +1,6 @@
 #  Kobot  
 
-A sleek **dark-themed Web3-style chatbot interface** powered by **Google Gemini AI**.  
+A  friendly AI chatbot ** powered by **Google Gemini AI**.  
 This project provides a minimal yet modern chat UI built with Flask, HTML/CSS/JS, and integrates with the **Gemini 1.5 Pro API** for natural language responses.  
 
 ---
